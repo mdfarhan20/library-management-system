@@ -14,6 +14,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/books", require("./routes/books-route"));
+app.use("/author", require("./routes/author-route"));
+app.use("/members", require("./routes/member-route"));
+app.use("/records", require("./routes/records-route"));
 
 
 app.listen(PORT, () => {
