@@ -32,6 +32,9 @@ const bookSchema = mongoose.Schema(
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Author"
+    },
+    coverImage: {
+      type: String
     }
   }
 );

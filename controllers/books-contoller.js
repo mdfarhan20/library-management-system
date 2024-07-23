@@ -4,6 +4,8 @@ const Author = require("../models/author-model");
 const BorrowRecord = require("../models/borrow-record-model");
 const Member = require("../models/member-model");
 const cacheData = require("../caching/cache-data");
+const { URL } = require("../constants");
+const fs = require('fs');
 
 const getBooks = asyncHandler(async (req, res) => {
   const authorId = req.query.authorId;
@@ -51,7 +53,7 @@ const addNewBook = asyncHandler(async (req, res) => {
     copies,
     authorId
   } = req.body;
-
+  
   if (!title || !publishedDate || !isbn || !category || !copies || !authorId) {
     res.status(400);
     throw new Error("Insufficient Data");
@@ -63,9 +65,16 @@ const addNewBook = asyncHandler(async (req, res) => {
     throw new Error("Invalid Author ID");
   }
 
+  let coverImage = null;
+  if (req.file) {
+    coverImage = `${URL}/images/${req.file.filename}`;
+  }
+
+
   const book = await Book.create({ 
     title, publishedDate, isbn, category, authorId,
-    availableCopies: copies, totalCopies: copies
+    availableCopies: copies, totalCopies: copies,
+    coverImage
   });
 
   if (!book) {
@@ -86,17 +95,27 @@ const addNewBook = asyncHandler(async (req, res) => {
 const updateBookById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const book = await Book.findByIdAndUpdate(id, req.body, { new: true });
+  const book =  await Book.findById(id);
 
   if (!book) {
     res.status(404);
     throw new Error("Book not found");
   }
 
+  let coverImage = book.coverImage;
+  if (req.file) {
+    let parts = coverImage.split("/")
+    let lastImageName = parts[parts.length - 1];
+    fs.rmSync(`uploads/${lastImageName}`);
+    coverImage = `${URL}/images/${req.file.filename}`
+  }
+
+  await Book.findByIdAndUpdate(id, {...req.body, coverImage }, { new: true });
+
   res.status(200).json({
     message: "Book updated successfully",
     book
-  })
+  });
 });
 
 

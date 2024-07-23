@@ -8,3 +8,5 @@ exports.constants = {
 }
 
 exports.CACHE_EXPIRATION = 3600
+
+exports.URL = process.env.URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
