@@ -4,7 +4,7 @@ const Author = require("../models/author-model");
 const BorrowRecord = require("../models/borrow-record-model");
 const Member = require("../models/member-model");
 const cacheData = require("../caching/cache-data");
-const { URL } = require("../constants");
+const { HOST_URL } = require("../constants");
 const fs = require('fs');
 
 const getBooks = asyncHandler(async (req, res) => {
@@ -67,7 +67,7 @@ const addNewBook = asyncHandler(async (req, res) => {
 
   let coverImage = null;
   if (req.file) {
-    coverImage = `${URL}/images/${req.file.filename}`;
+    coverImage = `${HOST_URL}/images/${req.file.filename}`;
   }
 
 
@@ -107,7 +107,7 @@ const updateBookById = asyncHandler(async (req, res) => {
     let parts = coverImage.split("/")
     let lastImageName = parts[parts.length - 1];
     fs.rmSync(`uploads/${lastImageName}`);
-    coverImage = `${URL}/images/${req.file.filename}`
+    coverImage = `${HOST_URL}/images/${req.file.filename}`
   }
 
   await Book.findByIdAndUpdate(id, {...req.body, coverImage }, { new: true });
