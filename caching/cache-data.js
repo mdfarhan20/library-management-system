@@ -1,9 +1,14 @@
+const { CACHE_EXPIRATION } = require("../constants");
 const redisClient = require("./redis-client");
 
 async function cacheData(key, callback) {
-  redisClient.get(key, async (err, data) => {
-    if (err) console.error(err);
-    if (data)
-      return data;
-  });
+  const data = await redisClient.get(key);
+  if (data !== null)
+    return JSON.parse(data);
+
+  const newData = await callback();
+  redisClient.set(key, CACHE_EXPIRATION, JSON.stringify(newData));
+  return newData;
 }
+
+module.exports = cacheData;

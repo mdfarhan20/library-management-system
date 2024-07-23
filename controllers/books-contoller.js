@@ -3,6 +3,7 @@ const Book = require("../models/book-model");
 const Author = require("../models/author-model");
 const BorrowRecord = require("../models/borrow-record-model");
 const Member = require("../models/member-model");
+const cacheData = require("../caching/cache-data");
 
 const getBooks = asyncHandler(async (req, res) => {
   const authorId = req.query.authorId;
@@ -11,21 +12,26 @@ const getBooks = asyncHandler(async (req, res) => {
   if (authorId)
     query = { authorId }
 
-  const books = await Book.find(query);
+  const books = await cacheData(`books?authorId=${authorId}`, async () => {
+    const books = await Book.find(query);
+    return books;
+  });
+  
   res.status(200).json({ books });
 });
 
 
 const getBookById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   if (!id) {
     res.statusCode(400);
     throw new Error("Book id required");
   }
 
-  const book = await Book.findById(id);
+  const book = await cacheData(`book?id=${id}`, async () => {
+    return (await Book.findById(id));
+  });
   
   if (!book) {
     res.status(404);

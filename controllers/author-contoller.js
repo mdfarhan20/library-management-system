@@ -1,8 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const Author = require("../models/author-model");
+const cacheData = require("../caching/cache-data");
 
 const getAuthors = asyncHandler(async (req, res) => {
-  const authors = await Author.find();
+  const authors = await cacheData('authors', async () => await Author.find());
   res.status(200).json({ authors });
 });
 
@@ -10,7 +11,7 @@ const getAuthors = asyncHandler(async (req, res) => {
 const getAuthorById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const author = await Author.findById(id);
+  const author = await cacheData(`author?id=${id}`, async () => await Author.findById(id));
   
   if (!author) {
     res.status(404);

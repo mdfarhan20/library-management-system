@@ -6,3 +6,5 @@ exports.constants = {
   SERVER_ERROR: 500,
   BAD_REQUEST: 400,
 }
+
+exports.CACHE_EXPIRATION = 3600

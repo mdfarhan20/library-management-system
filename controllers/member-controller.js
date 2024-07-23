@@ -1,8 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const Member = require("../models/member-model");
+const cacheData = require("../caching/cache-data");
+
 
 const getMembers = asyncHandler(async (req, res) => {
-  const members = await Member.find();
+  const members = await cacheData('members', async () => await Member.find());
   res.status(200).json({ members });
 });
 
@@ -10,7 +12,7 @@ const getMembers = asyncHandler(async (req, res) => {
 const getMemberById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const member = await Member.findById(id);
+  const member = await cacheData(`member?id=${id}`, async () => await Member.findById(id));
   
   if (!member) {
     res.status(404);

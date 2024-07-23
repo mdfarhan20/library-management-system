@@ -2,9 +2,11 @@ const asyncHandler = require("express-async-handler");
 const BorrowRecord = require("../models/borrow-record-model");
 const Member = require("../models/member-model");
 const Book = require("../models/book-model");
+const cacheData = require("../caching/cache-data");
+
 
 const getRecords = asyncHandler(async (req, res) => {
-  const records = await BorrowRecord.find();
+  const records = await cacheData('records', async () => await BorrowRecord.find());
   res.status(200).json({ records });
 });
 
