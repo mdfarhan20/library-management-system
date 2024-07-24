@@ -1,9 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const Author = require("../models/author-model");
+const Book = require("../models/book-model");
 const cacheData = require("../caching/cache-data");
 
 const getAuthors = asyncHandler(async (req, res) => {
-  const authors = await cacheData('authors', async () => await Author.find());
+  const authors = await cacheData('authors', async () => (await Author.find()));
   res.status(200).json({ authors });
 });
 
@@ -35,6 +36,8 @@ const addNewAuthor = asyncHandler(async (req, res) => {
   if (!author) {
     throw new Error("Author cannot be created");
   }
+
+  await Book.deleteMany({ authorId: author.id });
 
   res.status(201).json({ 
     message: "Author has been registered",

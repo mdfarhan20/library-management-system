@@ -19,7 +19,7 @@ app.use(requestLogger)
 app.use("/images", express.static(path.join(__dirname, "uploads")));
 
 app.use("/books", require("./routes/books-route"));
-app.use("/author", require("./routes/author-route"));
+app.use("/authors", require("./routes/author-route"));
 app.use("/members", require("./routes/member-route"));
 app.use("/records", require("./routes/records-route"));
 

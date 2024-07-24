@@ -7,7 +7,7 @@ async function cacheData(key, callback) {
     return JSON.parse(data);
 
   const newData = await callback();
-  redisClient.set(key, CACHE_EXPIRATION, JSON.stringify(newData));
+  redisClient.setEx(key, CACHE_EXPIRATION, JSON.stringify(newData));
   return newData;
 }
 
